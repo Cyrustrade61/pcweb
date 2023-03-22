@@ -38,7 +38,7 @@ def self_hosting():
         doctext(
             "Clone your code to a server and install the ",
             doclink("requirements", href=installation.path),
-            ". ",
+            ".",
         ),
         subheader("Edit Config"),
         doctext(
@@ -49,7 +49,7 @@ def self_hosting():
             " at the end.",
         ),
         doctext(
-            "For example if your server is at 192.168.1.1, your config would look like this: "
+            "For example if your server is at 192.168.1.1, your config would look like this:"
         ),
         doccode(
             """config = pc.Config(
@@ -60,7 +60,7 @@ def self_hosting():
 )
 """,
         ),
-        doctext("Then run your app in production mode: "),
+        doctext("Then run your app in production mode:"),
         doccode("$ pc run --env prod", language="bash"),
         doctext(
             " Production mode creates an optimized build of your app.",
@@ -85,5 +85,83 @@ def self_hosting():
             "It also creates a ",
             pc.code("backend.zip"),
             " file with your app's backend code that you can upload to your server.",
+        ),
+        doctext(
+            "You can export only the frontend or backend by passing in the ",
+            pc.code("--frontend-only"),
+            " or ",
+            pc.code("--backend-only"),
+            " flags.",
+        ),
+        doctext(
+            "It is also possible to export the components without zip it separate. To do this, use the ",
+            pc.code("--no-zip"),
+            " parameter.",
+            "This provides the frontend in the ",
+            pc.code(".web/_static/"),
+            " directory and the backend can be found in the root directory of the project. ",
+        ),
+        subheader("Pynecone Container Service"),
+        doctext(
+            "Another option is to run your Pynecone service in a container. ",
+            "For this purpose, a ",
+            pc.code("Dockerfile"),
+            " and additional documentation is available in the Pynecone project in the directory ",
+            pc.code("docker-example"),
+            ". ",
+        ),
+        doctext(
+            "For the build of the container image it is necessary to edit the ",
+            pc.code("pcconfig.py"),
+            " and the add the ",
+            pc.code("requirements.txt"),
+            " to your project folder. The following changes are necessary in ",
+            pc.code("pcconfig.py"),
+            ":",
+        ),
+        doccode(
+            """config = pc.Config(
+    app_name="app",
+    api_url="0.0.0.0:8000",
+    bun_path="/app/.bun/bin/bun",
+    db_url="sqlite:///pynecone.db",
+)
+""",
+        ),
+        doctext(
+            "You can find the ",
+            pc.code("requirements.txt"),
+            " in the ",
+            pc.code("docker-example"),
+            " folder of the project too.",
+        ),
+        doctext(
+            "The project structure should looks like this:",
+        ),
+        doccode(
+            """hello
+├── .web
+├── assets
+├── hello
+│   ├── __init__.py
+│   └── hello.py
+├── pcconfig.py
+├── Dockerfile
+└── requirements.txt""",
+            language="bash",
+        ),
+        doctext(
+            "After all changes have been made, the container image can now be created as follows.",
+        ),
+        doccode(
+            """$ docker build -t pynecone-project:latest .""",
+            language="bash",
+        ),
+        doctext(
+            "Finally, you can start your Pynecone container service as follows.",
+        ),
+        doccode(
+            """$ docker run -d -p 3000:3000 -p 8000:8000 --name pynecone pynecone:latest""",
+            language="bash",
         ),
     )

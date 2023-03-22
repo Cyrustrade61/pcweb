@@ -131,6 +131,7 @@ def get_sidebar_items_learn():
                 advanced_guide.middleware,
                 advanced_guide.wrapping_react,
                 advanced_guide.api_routes,
+                advanced_guide.telemetry,
             ],
         )
     )
@@ -182,14 +183,12 @@ def sidebar_leaf(
             item.link == url,
             pc.link(
                 item.names,
-                # format_item_name(item_name),
                 href=item.link,
                 color=styles.ACCENT_COLOR,
                 _hover={"color": styles.ACCENT_COLOR},
             ),
             pc.link(
                 item.names,
-                # format_item_name(item_name),
                 href=item.link,
                 color=styles.DOC_REG_TEXT_COLOR,
                 _hover={"color": styles.ACCENT_COLOR},
@@ -203,7 +202,7 @@ def sidebar_leaf(
 @pc.component
 def sidebar_item_comp(
     item: pc.Var[SidebarItem],
-    index: pc.Var[int],
+    index: pc.Var[list[int]],
     url: pc.Var[str],
     first: pc.Var[bool],
 ):
@@ -256,7 +255,7 @@ def sidebar_item_comp(
                         ),
                         allow_toggle=True,
                         allow_multiple=True,
-                        # default_index=index,
+                        default_index=pc.cond(index, index[1:2], []),
                     ),
                     margin_left="1em",
                 ),
@@ -324,8 +323,8 @@ def sidebar_comp(
             *[
                 sidebar_item_comp(
                     item=item,
+                    index=[-1],
                     url=url,
-                    index=-1,
                     first=True,
                 )
                 for item in learn
@@ -341,16 +340,7 @@ def sidebar_comp(
         pc.heading("Reference", style=heading_style3),
         pc.accordion(
             *[
-                sidebar_item_comp(
-                    item=item,
-                    url=url,
-                    # first=True,
-                    index=1,
-                    first=True,
-                    # index=examples_index[1:]
-                    # if examples_index is not None and i == examples_index[0]
-                    # else None,
-                )
+                sidebar_item_comp(item=item, url=url, first=True, index=examples_index)
                 for i, item in enumerate(examples)
             ],
             allow_toggle=True,
@@ -360,7 +350,7 @@ def sidebar_comp(
         pc.vstack(
             pc.link(
                 pc.hstack(
-                    pc.icon(tag="MinusIcon", height=".75rem", style=heading_style),
+                    pc.icon(tag="minus", height=".75rem", style=heading_style),
                     pc.text(
                         "Gallery",
                         style={
